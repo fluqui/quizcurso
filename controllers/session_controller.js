@@ -9,8 +9,8 @@ exports.loginRequired = function(req, res, next){
 
 //GET /login -- formulario de login
 exports.new = function(req,res) {
-	var errors = req.sessions.errors || {};
-	req.sessions.errors = {};
+	var errors = req.session.errors || {};
+	req.session.errors = {};
 
 	res.render('sessions/new', {errors: errors});
 };
@@ -37,7 +37,7 @@ exports.create = function(req, res) {
 };
 
 // DELETE /logout --destruir sesion
-exports.destroy = function(req. res) {
+exports.destroy = function(req, res) {
 	delete req.session.user;
 	res.redirect(req.session.redir.toString()); // redirect a path anterior a login
 };

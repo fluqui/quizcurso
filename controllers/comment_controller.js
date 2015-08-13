@@ -1,16 +1,16 @@
 var models = require('../models/models.js');
 
 //Autoload :id de comentarios
-exports.load = function(req, res, next, commmentId){
+exports.load = function(req, res, next, commentId){
 	models.Comment.find({
 		where: {
-			id: Number(commmentId)
+			id: Number(commentId)
 		}
 	}).then(function(comment) {
 		if (comment) {
 			req.comment = comment;
 			next();
-		}else{next Error('No existe commentId=' + commentId))}
+		}else{next (new Error('No existe commentId=' + commentId))}
 	}).catch(function(error){next(error)});
 };
 
@@ -31,7 +31,7 @@ exports.create = function(req, res) {
 		function(err) {
 			if (err) {
 				res.render('comments/new.ejs',
-					{comment: comment, quizid: req.params.quizId, errors: err:errors});
+					{comment: comment, quizid: req.params.quizId, errors: err.errors});
 			}else{
 				comment
 				.save()
