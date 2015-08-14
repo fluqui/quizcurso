@@ -4,7 +4,7 @@ var models = require('../models/models.js');
 exports.load = function (req, res, next, quizId) {
 	models.Quiz.find({
 			where: {id: Number(quizId) },
-			includ: [{model: models.Comment}]
+			include: [{model: models.Comment}]
 		}).then(function(quiz){
 			if (quiz){
 				req.quiz = quiz;
@@ -88,19 +88,17 @@ exports.update = function(req, res) {
 	req.quiz.respuesta = req.body.quiz.respuesta;
 	req.quiz.tematica = req.body.quiz.tematica;
 
-	req.quiz
-	.validate()
-	.then(
-		function(error) {
+	req.quiz.validate().then(
+		function(err) {
 			if (err) {
-				res.render('quizes/edit', {quiz: req.quiz, errors: []});
+				res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
 			} else{
 				req.quiz 	// save: guarda campos en DB
 				.save ({fields: ["pregunta", "respuesta", "tematica"]})
 				.then (function(){res.redirect('/quizes');});
 			}
 		}
-	);
+	).catch(function(error) {next(error)});
 };
 
 // DELETE /quizes/:id

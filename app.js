@@ -22,18 +22,42 @@ app.use(partials());
 app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser('Quiz2015'));
-app.use(session());
+app.use(session({
+    secret: 'Quiz2015',
+    resave: false,
+    saveUninitialized: true
+    }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+ app.use(function(req, res, next) {
+     if(req.session.user){
+         if(!req.session.tiempo){
+             req.session.tiempo=(new Date()).getTime();
+          }else{
+            if((new Date()).getTime()-req.session.tiempo > 120000){
+                delete req.session.user; 
+                 res.redirect('/login');
+            }else{
+                req.session.tiempo=(new Date()).getTime();
+            }
+        }
+    }
+    next();
+});
+
 //Helpers dinamicos
 app.use(function(req, res, next){
+    if (!req.session.redir){
+        req.session.redir = '/';
+    }
     //guardar path en session.redir para despues de login
     if(!req.path.match(/\/login|\/logout/)){
         req.session.redir = req.path;
     }
+    console.log(req.path)
 
     //Hacer visible req.session en las vistas
     res.locals.session = req.session;

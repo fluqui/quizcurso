@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 	.then(
 		function(err) {
 			if (err) {
-				res.render('comments/new.ejs',
+				res.render('comments/new',
 					{comment: comment, quizid: req.params.quizId, errors: err.errors});
 			}else{
 				comment
